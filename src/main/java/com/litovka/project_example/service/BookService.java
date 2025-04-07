@@ -45,4 +45,8 @@ public class BookService {
     public Optional<Book> findBookById(Long bookId) {
         return bookRepository.findById(bookId);
     }
+
+    public List<Book> searchBooks(String title, String author, Integer year) {
+        return bookRepository.searchBooks(title, author, year);
+    }
 }

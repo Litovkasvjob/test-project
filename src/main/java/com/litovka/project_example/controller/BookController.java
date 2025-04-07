@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -93,6 +94,23 @@ public class BookController {
         String sortDirection = sort[1];
         Sort.Direction direction = "desc".equalsIgnoreCase(sortDirection) ? Sort.Direction.DESC : Sort.Direction.ASC;
         return bookService.findAllBooks(PageRequest.of(page, size, Sort.by(direction, sortField)));
+    }
+
+    /**
+     * Searches for books based on the provided search criteria.
+     *
+     * @param title  the title of the book to search for
+     * @param author the author of the book to search for
+     * @param year   the year of publication to search for
+     * @return a ResponseEntity containing a list of matching book objects and an HTTP status of 200 OK
+     */
+    @GetMapping("/search")
+    public ResponseEntity<List<Book>> searchBooks(
+            @RequestParam(required = false) String title,
+            @RequestParam(required = false) String author,
+            @RequestParam(required = false) Integer year) {
+        List<Book> books = bookService.searchBooks(title, author, year);
+        return new ResponseEntity<>(books, HttpStatus.OK);
     }
 
 }
