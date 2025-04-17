@@ -1,9 +1,15 @@
 package com.litovka.project_example.model;
 
-import jakarta.persistence.*;
-import jakarta.validation.constraints.*;
-
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.Data;
+
+import static com.litovka.project_example.constants.ProjectConstants.AUTHOR_MAX_LENGTH;
+import static com.litovka.project_example.constants.ProjectConstants.TITLE_MAX_LENGTH;
 
 @Data
 @Entity
@@ -12,18 +18,15 @@ public class Book {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false)
     private Long id;
 
-    @NotBlank(message = "Title is mandatory")
-    @Size(max = 100, message = "Title must not exceed 100 characters")
+    @Column(name = "title", nullable = false, length = TITLE_MAX_LENGTH)
     private String title;
 
-    @NotBlank(message = "Author is mandatory")
-    @Size(max = 50, message = "Author must not exceed 50 characters")
+    @Column(name = "author", nullable = false, length = AUTHOR_MAX_LENGTH)
     private String author;
 
-    @NotNull(message = "Published year is mandatory")
-    @Min(value = 1900, message = "Published year must be no earlier than 1900")
-    @Max(value = 2100, message = "Published year must be no later than 2100")
-    private Integer publishedYear;
+    @Column(name = "published_year", nullable = false)
+    private Integer year;
 }
