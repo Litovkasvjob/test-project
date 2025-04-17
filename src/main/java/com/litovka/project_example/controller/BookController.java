@@ -1,57 +1,69 @@
 package com.litovka.project_example.controller;
 
+import com.litovka.project_example.dto.BookDTO;
 import com.litovka.project_example.model.Book;
 import com.litovka.project_example.service.BookService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.Optional;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/books")
 public class BookController {
 
     private final BookService bookService;
 
-    public BookController(BookService bookService) {
-        this.bookService = bookService;
-    }
-
     /**
      * Adds a new book to the database.
      *
-     * @param book the book object to be added, validated and provided in the request body
+     * @param bookDTO the book object to be added, validated and provided in the request body
      * @return a ResponseEntity containing the added book object and an HTTP status of 201 CREATED
      */
     @PostMapping
-    public ResponseEntity<Book> createBook(@Valid @RequestBody Book book) {
-        return new ResponseEntity<>(bookService.saveOrUpdateBook(book), HttpStatus.CREATED);
+    public ResponseEntity<BookDTO> createBook(@Valid @RequestBody BookDTO bookDTO) {
+        return new ResponseEntity<>(bookService.saveOrUpdateBook(bookDTO), HttpStatus.CREATED);
     }
 
     /**
      * Updates an existing book in the database.
      *
      * @param bookId the ID of the book to be updated, provided in the path variable
-     * @param book   the updated book object, validated and provided in the request body
+     * @param bookDTO   the updated book object, validated and provided in the request body
      * @return a ResponseEntity containing the updated book object and an HTTP status of 200 OK,
      * or an HTTP status of 400 Bad Request if the provided book ID does not match the path variable
      */
     @PutMapping("/{id}")
-    public ResponseEntity<Book> updateBook(@PathVariable("id") Long bookId, @Valid @RequestBody Book book) {
-        if (!bookId.equals(book.getId())) {
+    public ResponseEntity<BookDTO> updateBook(@PathVariable("id") Long bookId, @Valid @RequestBody BookDTO bookDTO) {
+
+        if (bookId == null) {
+            throw new IllegalArgumentException("Book ID cannot be null");
+        }
+
+        if (!bookId.equals(bookDTO.getId())) {
             return ResponseEntity.badRequest().build();
         }
         Optional<Book> bookOptional = bookService.findBookById(bookId);
         if (bookOptional.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
-        return new ResponseEntity<>(bookService.saveOrUpdateBook(book), HttpStatus.OK);
+        return new ResponseEntity<>(bookService.saveOrUpdateBook(bookDTO), HttpStatus.OK);
     }
 
     /**
